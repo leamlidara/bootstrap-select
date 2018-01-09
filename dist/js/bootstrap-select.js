@@ -863,7 +863,8 @@
           header = this.options.header && this.$menu.find('.popover-title').length > 0 ? this.$menu.find('.popover-title')[0].cloneNode(true) : null,
           search = this.options.liveSearch ? document.createElement('div') : null,
           actions = this.options.actionsBox && this.multiple && this.$menu.find('.bs-actionsbox').length > 0 ? this.$menu.find('.bs-actionsbox')[0].cloneNode(true) : null,
-          doneButton = this.options.doneButton && this.multiple && this.$menu.find('.bs-donebutton').length > 0 ? this.$menu.find('.bs-donebutton')[0].cloneNode(true) : null;
+          doneButton = this.options.doneButton && this.multiple && this.$menu.find('.bs-donebutton').length > 0 ? this.$menu.find('.bs-donebutton')[0].cloneNode(true) : null,
+          headerHeight=0, searchHeight=0, actionsHeight=0, doneButtonHeight=0;
 
       text.className = 'text';
       newElement.className = this.$menu[0].parentNode.className + ' open';
@@ -876,26 +877,35 @@
       li.appendChild(a);
       menuInner.appendChild(li);
       menuInner.appendChild(divider);
-      if (header) menu.appendChild(header);
+      if (header){
+        document.body.appendChild(header);
+        headerHeight = header.offsetHeight;
+        document.body.removeChild(header);
+      }
       if (search) {
         var input = document.createElement('input');
         search.className = 'bs-searchbox';
         input.className = 'form-control';
         search.appendChild(input);
-        menu.appendChild(search);
+        document.body.appendChild(search);
+        searchHeight = search.offsetHeight;
+        document.body.removeChild(search);
       }
-      if (actions) menu.appendChild(actions);
+      if (actions){
+          document.body.appendChild(actions);
+          actionsHeight = actions.offsetHeight;
+          document.body.removeChild(actions);
+      }
       menu.appendChild(menuInner);
-      if (doneButton) menu.appendChild(doneButton);
-      newElement.appendChild(menu);
-
-      document.body.appendChild(newElement);
-
+      if (doneButton){
+          document.body.appendChild(doneButton);
+          doneButtonHeight = doneButton.offsetHeight;
+          document.body.removeChild(doneButton);
+      }
+      
+      document.body.appendChild(menu);
+      
       var liHeight = a.offsetHeight,
-          headerHeight = header ? header.offsetHeight : 0,
-          searchHeight = search ? search.offsetHeight : 0,
-          actionsHeight = actions ? actions.offsetHeight : 0,
-          doneButtonHeight = doneButton ? doneButton.offsetHeight : 0,
           dividerHeight = $(divider).outerHeight(true),
           // fall back to jQuery if getComputedStyle is not supported
           menuStyle = typeof getComputedStyle === 'function' ? getComputedStyle(menu) : false,
@@ -919,7 +929,7 @@
                   parseInt(menuStyle ? menuStyle.marginRight : $menu.css('marginRight')) + 2
           }
 
-      document.body.removeChild(newElement);
+      document.body.removeChild(menu);
 
       this.sizeInfo = {
         liHeight: liHeight,
